@@ -1,4 +1,15 @@
+console.log("Hello");
+
 let buttons = document.querySelectorAll('.calc-button');
+
+//grab the display (an element inside the display div holds the shown number)
+let display = document.getElementById("innerDisplay");
+let expressionDisplay = document.getElementById("expression");
+
+let operand = display.innerHTML = "0";
+let expression = [];
+
+let state = "clear";
 
 buttons.forEach((button) => {
   const buttonVal = button.querySelector('p').innerText;
@@ -8,40 +19,122 @@ buttons.forEach((button) => {
   });
 });
 
-//add the value to operation array
-const addVal = (val) => {
-  console.log(val);
+//add the value to expression array
+const processButton = (bVal) => {
+
+  let updateExpression = false;
+
+  switch (bVal) {
+
+    case 'C':
+      //clear
+      C();
+      updateExpression = true;
+      break;
+
+    case 'DEL':
+      //delete
+      DEL();
+      break;
+
+    case '=':
+      //evaulate
+      expression.push(operand);
+      evaluate(expression);
+      updateExpression = true;
+      break;
+
+    default:
+      //must be a operand or operator
+      let isOperand = !isNaN(parseInt(bVal));
+      let isOperator = !isOperand;
+
+      switch(state) {
+
+        case "clear":
+          if (isOperand) {
+            //operand on clear
+            display.innerHTML = operand = bVal;
+            state = "operand"; 
+          }
+          else {
+            //operator on clear
+            expression.push(operand,bVal);
+            updateExpression = true;
+            state = "operator";
+          }
+          break;
+
+        case "operand":
+          if (isOperand) { //operand on operand
+            //add it so long as it doesn't start with zero
+            operand += bVal;
+            display.innerHTML += bVal;
+          }
+          else { //operator on operand
+            expression.push(operand,bVal);
+            updateExpression = true;
+            state = "operator";
+          }
+          break;
+
+        case "operator":
+          if(isOperand) { //operand on operator
+            //incorporate new operand and update display
+            display.innerHTML = operand = bVal;
+            state = "operand";
+          }
+          else { //operator on operator
+            //override previous operator
+            expression[expression.length -1] = bVal;
+            updateExpression = true;
+            state = "operator";
+          }
+          break;
+        default:
+          break;
+      }
+
+      break;
+  }
+  if (updateExpression) { expressionDisplay.innerHTML = expression.join(' ')}
+  //if (expressionDisplay.innerHTML === "") {expressionDisplay.innerHTML = "0"}
 };
-
-//add operator, likely to array called "operation"//
-const addOperator = (operator) => {
-  console.log("Adding operator!");
-};
-
-//basic getNum function, returns the number, if it is one, else returns NAN -- 
-//DOESN'T CURRENTLY WORK FOR ZERO!
-const getNum = (value) => {return parseInt(value);};
-
-//will need conditional to determine if number or operation
-  //could be good to seperate nums and operator processing
 
 //when "=" is clicked
-//takes a simple array of operations EX: ["2","+","2"]
-//and should return the result I.E. 4
-const evaluate = (operationArr) {
-  //will need conditional to determine if number or operation
-  //could be good to seperate nums and operator processing
-  if(isNum(val)){
-    console.log("Number!");
-  }
-  else {
-    console.log("Operator!")
-    addOperator(val);
-  }
+//should return the result
+const evaluate = (e) => {
+  console.log(expression);
 };
 
-//array mapping example, useful for eventual evaluation function
+const C = () => {
+  operand = display.innerHTML = "0";
+  expression = [];
+  state = "clear";
+};
 
-/*var arr = ["100", "+","0"];
-arr = arr.map( x => x == 0 ? 0 : (parseInt(x) || x));
-console.log(arr);*/
+const DEL =  () => {
+  //let's not leave the display empty
+  if (display.innerHTML.length === 1) { 
+    display.innerHTML = "0";
+    state = "clear";
+    return;
+  }
+  display.innerHTML = display.innerHTML.slice(0,-1);
+};
+
+const divide = () => {
+
+};
+
+const times = () => {
+
+};
+
+const minus = () => {
+
+};
+
+const plus = () => {
+
+};

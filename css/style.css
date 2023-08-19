@@ -1,6 +1,13 @@
+html {
+	background: lightblue;
+}
+
 body {
-    margin: 0 auto;
-    padding: 20px;
+	display: flex;
+	flex-direction: column;
+	row-gap: 5px;
+	margin: 0 auto;
+	padding: 20px;
 }
 
 .calculator {
@@ -88,3 +95,32 @@ body {
 	flex-basis: 15%;
 }
 
+.expressionSection {
+	display: flex;
+	flex-direction: column;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 1px 0px 0px #323733, 1px 1px 0px #323733, 1px 1px 0px #323733, 2px 2px 0px #323733, 3px 3px 0px #323733, 4px 4px 0px #323733;
+	border: 2px solid #343131;
+	background: grey;
+	padding: 20px;
+	/* row-gap: 10px; */
+}
+
+.expressionBox {
+	display: flex;
+	flex: 1;
+	background: black;
+	padding: 20px;
+	min-height: 300px;
+	border-radius: 0 0 10px 10px;
+}
+
+#expression {
+	flex: 1;
+	margin: 0;
+	font-size: 1.25rem;
+	color: green;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-weight: bold;
+}

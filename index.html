@@ -4,14 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/style.css" rel="stylesheet">
+    <script src="scripts/script.js" defer></script>
     <title>Flexbox Calculator</title>
 </head>
 <body>
+    <script>0</script>
+    <section class="expressionSection">
+        <div class="expressionBox">
+            <p id="expression"></p>
+        </div>
+    </section>
     <section class="calculator">
         <!-- Input display -->
-        <div class="display">
+        <div id="display" class="display">
             <!-- Default input is 0 -->
-            <p>0</p>
+            <p id="innerDisplay">0</p>
         </div>
 
         <div class="non-operators">
