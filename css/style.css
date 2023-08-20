@@ -10,6 +10,36 @@ body {
 	padding: 20px;
 }
 
+.expressionSection {
+	display: flex;
+	flex-direction: column;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 1px 0px 0px #323733, 1px 1px 0px #323733, 1px 1px 0px #323733, 2px 2px 0px #323733, 3px 3px 0px #323733, 4px 4px 0px #323733;
+	border: 2px solid #343131;
+	background: grey;
+	padding: 20px;
+	/* row-gap: 10px; */
+}
+
+#expressionBox {
+	display: flex;
+	flex-direction: column;
+	background: black;
+	padding: 20px;
+	min-height: 300px;
+	border-radius: 0 0 10px 10px;
+}
+
+.expressionValue {
+	flex-basis: 100%;
+	margin: 0;
+	font-size: 1.25rem;
+	color: green;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-weight: bold;
+}
+
 .calculator {
 	display: flex;
 	flex-flow: row wrap;
@@ -34,9 +64,13 @@ body {
     border-radius: 5px;
 }
 
-.display p {
-    padding-right: 10px;
-    margin-right: 20px;
+#displayValue {
+	display: flex;
+	flex: 1;
+	padding-right: 10px;
+	box-sizing: border-box;
+	align-self: center;
+	justify-content: flex-end;
 }
 
 .calc-button {
@@ -93,34 +127,4 @@ body {
 
 .operator-key {
 	flex-basis: 15%;
-}
-
-.expressionSection {
-	display: flex;
-	flex-direction: column;
-	border-radius: 10px;
-	overflow: hidden;
-	box-shadow: 1px 0px 0px #323733, 1px 1px 0px #323733, 1px 1px 0px #323733, 2px 2px 0px #323733, 3px 3px 0px #323733, 4px 4px 0px #323733;
-	border: 2px solid #343131;
-	background: grey;
-	padding: 20px;
-	/* row-gap: 10px; */
-}
-
-.expressionBox {
-	display: flex;
-	flex: 1;
-	background: black;
-	padding: 20px;
-	min-height: 300px;
-	border-radius: 0 0 10px 10px;
-}
-
-#expression {
-	flex: 1;
-	margin: 0;
-	font-size: 1.25rem;
-	color: green;
-	font-family: Verdana, Geneva, Tahoma, sans-serif;
-	font-weight: bold;
 }
