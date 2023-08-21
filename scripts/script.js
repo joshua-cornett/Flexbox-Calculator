@@ -10,6 +10,7 @@ const calcDisplay = document.getElementById("displayValue");
 const exprDisplay = document.getElementById("expressionBox");
 
 let operand = calcDisplay.innerHTML = "0";
+let operator = "";
 
 let expressions = [];
 let expression = [];
@@ -34,6 +35,7 @@ buttons.forEach((button) => {
 });
 
 const addNewExpression = () => {
+  //expression = [operand, operator, expression[expression.length-3]];
   expression = [];
   const newPElement = exprDisplay.appendChild(document.createElement('p'));
   newPElement.setAttribute('class','expressionValue');
@@ -41,9 +43,15 @@ const addNewExpression = () => {
 
 const processButton = (bVal) => {
 
-  const isOperand = !isNaN(parseInt(bVal));
-  if (isOperand) { //need to check if last item in expression is an operator
-    operand !== "0" && !isNaN(parseInt(operand[operand.length-1])) ? 
+  if (bVal === ".") {
+    alert("Sorry for the alert, but decimals aren't ready yet.");
+    return [0, 0, 0];
+  }
+
+
+  if (!isNaN(parseInt(bVal))) { 
+    //need to check if last item in expression is an operator
+    operand !== "0" && (!isNaN(parseInt(operand[operand.length-1]))) ? 
       operand += bVal : operand = bVal;
     return [1, 0, 0];
   }
@@ -52,21 +60,36 @@ const processButton = (bVal) => {
       case "C" : return Clr();
       case "DEL" : return DEL();
       case "=" : 
-        expression.push(operand);
+
+        //pushing the current operand like usual
+          //simultaneously checking if it was formerly empty
+            //and if so, that means we're evaluating continuously
+            //so we want to repeat the last operation on that operand 
+        if(expression.push(operand) - 1 === 0) {
+          if(expressions.length > 0) {
+            console.log("repeat operation");
+            //the code directly below works, but for legibility I'm partitioning it out
+            //expression.push(operator,expressions[expressions.length - 1][expressions[expressions.length - 1].length - 3]);
+            const lastExpression = expressions[expressions.length-1];
+            const lastOperand = lastExpression[lastExpression.length-3];
+            expression.push(operator,lastOperand);
+            operand = evaluate(expression);
+            expression.push(bVal,operand);
+            return [1, 1, 1];
+          }
+        }
+
         operand = evaluate(expression);
         expression.push(bVal,operand);
         expressions.push(expression);
         return [1, 1, 1];
       default:
         operator = bVal;
-        //can check for new length with this, too
         expression.push(operand,operator);
         operand = evaluate(expression);
-        
         return [1,1,0];
     }
   }
-
 };
 
 const Clr = () => {
@@ -74,7 +97,6 @@ const Clr = () => {
   expression = [];
   return [1, 1, 0];
 };
-
 
 //*** Need checks for deleting from evaluated results */
 const DEL =  () => {
@@ -87,27 +109,25 @@ const DEL =  () => {
 };
 
 const getExprSplit_i = (e) => {
+  
   let topPriority_i = 0;
   let topPriority = -1;
   for (let i = 0; i < e.length; i += 2) { //loop through expression, skipping operators
-    if (ops.includes(e[i + 1])) { //check if the next value in the expression is an actionable operator
+    if (ops.includes(e[i + 1]) ) { //check if the next value in the expression is an actionable operator
       const priority = ops.indexOf(e[i + 1]); //set the current priority to the operator's place in the operations array (listed by descending PEMDAS)
-      if (priority > topPriority) { //check if that priority is higher than the currently recorded highest
+      if (priority >= topPriority) { //check if that priority is higher than the currently recorded highest
         topPriority = priority; //if it is, set the new top priority
         topPriority_i = i + 1; //and record the index of that operator in the expression
       }
     }
   }
+  
   return topPriority_i;
-} 
-
-//**Need checks for evaluating expressions that end with an operator */
+};
 
 const evaluate = (expr) => {
-  
-  //MAY NEED TO PERFORM ADDITIONAL EXPRESSION FORMAT CHECKS HERE
 
-  if (expr.length < 3) { return parseFloat(expr[0]) } //if it's just a single operand, we can return that
+  if (expr.length < 3) { return parseFloat(expr[0]); } //if it's just a single operand, we can return that
 
   //this part is a little confusing
   //counterintuitively, the expression needs to be split by operators in order of lowest PEMDAS
@@ -119,15 +139,23 @@ const evaluate = (expr) => {
   //By splitting by the lower order PEMDAS operators,
   //the higher order PEMDAS operations can fully evaluate before returning
 
-
-  //**NEED TO CHECK FOR CASES WHERE NOTHING IS ON RIGHT SIDE OF SELECTED OPERATOR */
   const opIndex = getExprSplit_i(expr);//this function handles getting the index of the operator to split around
   const op = expr[opIndex]; //this is that operator, needed for the outermost evaluation
+
   const leftExpr = expr.slice(0, opIndex); //slice the array to yield the expression to the left of the priority operator
   const rightExpr = expr.slice(opIndex + 1, opIndex.length); //and then the right as well
 
-  const leftVal = parseFloat(eval(leftExpr));
-  const rightVal = parseFloat(eval(rightExpr));
+  //check to make sure subexpressions contain something
+  //otherwise just proceed with the other expression
+  if(leftExpr.length === 0 && rightExpr.length > 0) {
+    return evaluate(rightExpr);
+  }
+  if(rightExpr.length === 0 && leftExpr.length > 0) {
+    return evaluate(leftExpr);
+  }
+
+  const leftVal = evaluate(leftExpr);
+  const rightVal = evaluate(rightExpr);
 
   let result;
   switch (op) {
@@ -141,11 +169,11 @@ const evaluate = (expr) => {
       result = leftVal * rightVal;
       break;
     case '÷':
-      result = Math.floor(leftVal / rightVal);
+      result = leftVal / rightVal;
       break;
     default:
       throw new Error(`Invalid operator: ${op}`);
   }
 
-  return result;
+  return parseFloat(result);
 };
