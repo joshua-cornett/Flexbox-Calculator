@@ -15,7 +15,16 @@ let operator = "";
 let expressions = [];
 let expression = [];
 
-const ops = ['(',')','e','×','÷','+','-'];
+//const ops = ['(',')','e',['×','÷'],['+','-']];
+
+const operatorMap = new Map([
+  ["×", 1],
+  ["÷", 1],
+  ["+", 2],
+  ["-", 2],
+]);
+
+ const operators = [ ...operatorMap.keys()];
 
 buttons.forEach((button) => {
   const buttonVal = button.querySelector('p').innerText;
@@ -108,13 +117,13 @@ const DEL =  () => {
   return [1, 0, 0];
 };
 
-const getExprSplit_i = (e) => {
+/*const getExprSplit_i = (e) => {
   
   let topPriority_i = 0;
   let topPriority = -1;
   for (let i = 0; i < e.length; i += 2) { //loop through expression, skipping operators
-    if (ops.includes(e[i + 1]) ) { //check if the next value in the expression is an actionable operator
-      const priority = ops.indexOf(e[i + 1]); //set the current priority to the operator's place in the operations array (listed by descending PEMDAS)
+    if (operators.includes(e[i + 1]) ) { //check if the next value in the expression is an actionable operator
+      const priority = operators.length - operators.indexOf(e[i + 1]); //set the current priority to the operator's place in the operations array (listed by descending PEMDAS)
       if (priority >= topPriority) { //check if that priority is higher than the currently recorded highest
         topPriority = priority; //if it is, set the new top priority
         topPriority_i = i + 1; //and record the index of that operator in the expression
@@ -123,7 +132,25 @@ const getExprSplit_i = (e) => {
   }
   
   return topPriority_i;
+};*/
+
+const getExprSplit_i = (e) => {
+  let maxPriority = -1;
+  let maxPriority_i = 0;
+  for (let i = 0; i < e.length; i += 2) {
+    if (operators.includes(e[i+1])) {
+      console.log("yay?");
+      const currPriority = operatorMap.get(e[i+1]);
+      if(currPriority >= maxPriority) {
+        maxPriority = currPriority;
+        maxPriority_i = i+1;
+      }
+    }
+  }
+  return maxPriority_i;
 };
+
+
 
 const evaluate = (expr) => {
 
