@@ -3,20 +3,23 @@ console.log("Hello");
 const buttons = document.querySelectorAll('.calc-button');
 
 //grab the display (an element inside the display div holds the shown number)
-const calcDisplay = document.getElementById("displayValue");
+const displayValue = document.getElementById("displayValue");
+const displayOperation = document.getElementById("displayOperation");
 
 //grab the expression display
 //holds expressions as p elements
 const exprDisplay = document.getElementById("expressionBox");
 
-let operand = calcDisplay.innerHTML = "0";
+let operand = displayValue.innerHTML = "0";
 let operator = "";
+let operation = ["","","",""];
+
+let lastEntry = "";
 
 let expressions = [];
 let expression = [];
 
-//const ops = ['(',')','e',['×','÷'],['+','-']];
-
+//Map to store operators and their assigned priorities (PEMDAS)
 const operatorMap = new Map([
   ["×", 1],
   ["÷", 1],
@@ -24,17 +27,19 @@ const operatorMap = new Map([
   ["-", 2],
 ]);
 
- const operators = [ ...operatorMap.keys()];
+const operators = [ ...operatorMap.keys()];
 
 buttons.forEach((button) => {
   const buttonVal = button.querySelector('p').innerText;
   button.addEventListener('click', () => {
     //call function to process
     const updates = processButton(buttonVal);
+    lastEntry = buttonVal;
     if(updates[0]) { //update calculator display
-      calcDisplay.innerHTML = operand;
+      displayValue.innerHTML = operand;
     }
     if(updates[1]) { //update expression display
+      displayOperation.innerHTML = operation.join(' ');
       exprDisplay.lastElementChild.innerHTML = expression.join(' ');
     }
     if(updates[2]) { //add a new expression placeholder in the expression box
@@ -47,29 +52,42 @@ const addNewExpression = () => {
   //expression = [operand, operator, expression[expression.length-3]];
   expression = [];
   const newPElement = exprDisplay.appendChild(document.createElement('p'));
-  newPElement.setAttribute('class','expressionValue');
+  newPElement.setAttribute('class','expression');
 }
 
+/*****BUG LIST******/
+  //'.' after operator
+  //operator not clearing after new operand
 const processButton = (bVal) => {
 
-  if (bVal === ".") {
-    alert("Sorry for the alert, but decimals aren't ready yet.");
-    return [0, 0, 0];
-  }
-
+  //check if the operand contains a decimal
+  let isDecimal = operand.length > 0 && operand.includes('.');
 
   if (!isNaN(parseInt(bVal))) { 
-    //need to check if last item in expression is an operator
-    operand !== "0" && (!isNaN(parseInt(operand[operand.length-1]))) ? 
+    //if the operand is currently either a decimal or a non-zero integer
+      //add the entry
+    //otherwise, overwrite it
+    isDecimal || (!isNaN(parseInt(operand[operand.length-1])) && operand !== "0") ? 
       operand += bVal : operand = bVal;
     return [1, 0, 0];
   }
   else {
+    operand = parseFloat(operand);
     switch(bVal) {
+      
+      case "." :
+        //add the decimal so long as there isn't one already
+        let updateOperand = true;
+        (!isDecimal) ?
+          (!operators.includes(lastEntry)) ?
+            operand += bVal
+          : operand = "0" + bVal
+        : updateOperand = false;
+         
+        return [updateOperand,0,0]
       case "C" : return Clr();
       case "DEL" : return DEL();
       case "=" : 
-
         //pushing the current operand like usual
           //simultaneously checking if it was formerly empty
             //and if so, that means we're evaluating continuously
@@ -77,11 +95,11 @@ const processButton = (bVal) => {
         if(expression.push(operand) - 1 === 0) {
           if(expressions.length > 0) {
             console.log("repeat operation");
-            //the code directly below works, but for legibility I'm partitioning it out
-            //expression.push(operator,expressions[expressions.length - 1][expressions[expressions.length - 1].length - 3]);
+            
             const lastExpression = expressions[expressions.length-1];
             const lastOperand = lastExpression[lastExpression.length-3];
             expression.push(operator,lastOperand);
+            //operation = [operator, lastOperand];
             operand = evaluate(expression);
             expression.push(bVal,operand);
             return [1, 1, 1];
@@ -93,8 +111,19 @@ const processButton = (bVal) => {
         expressions.push(expression);
         return [1, 1, 1];
       default:
+        //pressed operator
+        //need to specifically check if the last button pressed was an operator
+          //so if it isn't an integer, and it isn't a '.'
+            //no need to check for '=' since that is never the end of our expressions
+        if(expression.length > 0) {
+          if (isNaN(parseInt(lastEntry)) && lastEntry !== '.') {
+            expression[expression.length-1] = operator = bVal;
+            return [1,1,0];
+          }
+        }
         operator = bVal;
         expression.push(operand,operator);
+        
         operand = evaluate(expression);
         return [1,1,0];
     }
@@ -103,11 +132,11 @@ const processButton = (bVal) => {
 
 const Clr = () => {
   operand = "0";
+  operator = "";
   expression = [];
   return [1, 1, 0];
 };
 
-//*** Need checks for deleting from evaluated results */
 const DEL =  () => {
   operand = operand.toString().slice(0,-1);
   //let's not leave the display empty
@@ -117,29 +146,11 @@ const DEL =  () => {
   return [1, 0, 0];
 };
 
-/*const getExprSplit_i = (e) => {
-  
-  let topPriority_i = 0;
-  let topPriority = -1;
-  for (let i = 0; i < e.length; i += 2) { //loop through expression, skipping operators
-    if (operators.includes(e[i + 1]) ) { //check if the next value in the expression is an actionable operator
-      const priority = operators.length - operators.indexOf(e[i + 1]); //set the current priority to the operator's place in the operations array (listed by descending PEMDAS)
-      if (priority >= topPriority) { //check if that priority is higher than the currently recorded highest
-        topPriority = priority; //if it is, set the new top priority
-        topPriority_i = i + 1; //and record the index of that operator in the expression
-      }
-    }
-  }
-  
-  return topPriority_i;
-};*/
-
 const getExprSplit_i = (e) => {
   let maxPriority = -1;
   let maxPriority_i = 0;
   for (let i = 0; i < e.length; i += 2) {
     if (operators.includes(e[i+1])) {
-      console.log("yay?");
       const currPriority = operatorMap.get(e[i+1]);
       if(currPriority >= maxPriority) {
         maxPriority = currPriority;
@@ -150,9 +161,7 @@ const getExprSplit_i = (e) => {
   return maxPriority_i;
 };
 
-
-
-const evaluate = (expr) => {
+const evaluate = (expr,expr_i) => {
 
   if (expr.length < 3) { return parseFloat(expr[0]); } //if it's just a single operand, we can return that
 
@@ -182,7 +191,7 @@ const evaluate = (expr) => {
   }
 
   const leftVal = evaluate(leftExpr);
-  const rightVal = evaluate(rightExpr);
+  const rightVal = evaluate(rightExpr);  
 
   let result;
   switch (op) {
