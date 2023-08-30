@@ -1,0 +1,158 @@
+html {
+	background: lightblue;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.history {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.blackbox {
+    display: flex;
+    flex-direction: column;
+	background: black;
+	padding: 10px;
+	border: 10px solid blueviolet;
+	border-radius: 10px;
+}
+
+.expressionHistory {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.expression {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    margin: 5px 0;
+    color: green;
+}
+
+.displayHeader {
+    color: white;
+    align-self: center;
+}
+
+.expressionLeft {
+    text-align: right;
+}
+
+.equals {
+    align-self: center;
+    width: 20px; 
+    text-align: center; 
+}
+
+.result {
+    text-align: right;
+    min-width: 30px; 
+}
+
+
+.calculator {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+	row-gap: .8vw;
+	padding: 20px;
+	box-sizing: border-box;
+	background: grey;
+    border: 2px solid #343131;	
+    border-radius: 5px;
+	box-shadow: 1px 0px 0px #323733, 1px 1px 0px #323733, 1px 1px 0px #323733, 2px 2px 0px #323733, 3px 3px 0px #323733, 4px 4px 0px #323733;
+}
+
+.operation {
+	flex: 0 0 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	background: #607990;
+	color: white;
+	box-shadow: inset 0 0 5px #000;
+    border-radius: 5px;
+}
+
+.operationElement {
+	display: flex;
+	flex: 1;
+	padding-right: 20px;
+}
+
+.calc-button {
+	flex: 0 0 25%;
+	box-sizing: border-box;
+	text-align: center;
+	background: #3b6732;
+	border: 1px solid #29562c;
+	border-radius: 10px;
+	color: white;
+	font-family: "Helvetica";
+	font-weight: bold;
+	box-shadow: 1px 0px 0px #315629, 1px 1px 0px #315629, 1px 1px 0px #315629, 2px 2px 0px #315629, 3px 3px 0px #315629;
+}
+
+.non-operators {
+	display: flex;
+	flex-basis: 74.5%;
+	flex-flow: row wrap;
+	justify-content: space-between;
+    row-gap: .8vw;
+}
+
+.clear {
+	flex-basis: 66.25%;
+}
+
+.delete {
+	flex-basis: 32.45%;
+}
+
+.num-keys {
+	flex-basis: 100%;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+    row-gap: .8vw;
+}
+
+.num-key {
+	flex-basis: 32.44%;
+}
+
+.zero {
+    flex-basis: 66.18%;
+}
+
+.operator-keys {
+	flex-basis: 24.5%;
+	display: flex;
+	flex-flow: column wrap;
+    row-gap: .8vw;
+}
+
+.operator-key {
+	flex-basis: 15%;
+}

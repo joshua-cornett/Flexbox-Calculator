@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/refactor.css" rel="stylesheet">
+    <script src="scripts/refactor.js" defer></script>
+    <title>Flexbox Calculator</title>
+</head>
+<body class="body">
+
+    <script>0</script>
+
+    <section id="historySection" class="outer">
+        <div id="history" class="blackbox history">
+            <h3 class="displayHeader">History</h3>
+            <div class="expression">
+                <span class="expressionLeft">1000000 / 10</span>
+                <span class="equals">=</span>
+                <span class="result">100000</span>
+            </div>
+            <div class="expression">
+                <span class="expressionLeft">2 + 2</span>
+                <span class="equals">=</span>
+                <span class="result">4</span>
+            </div>
+            <!-- Add more history items here -->
+        </div>
+    </section>
+    
+    <section id="currentExpressionSection" class="outer">
+        <!-- Displays current expression -->
+        <div class="blackbox currentExpression">
+            <h4 class="displayHeader">Current Expression</h4>
+            <div id="currentExpression" class="expression">
+                <span class="expressionLeft">50 + 5 + 30</span>
+                <span class="equals">=</span>
+                <span class="expressionLeft">55 + 30</span>
+                <span class="equals">=</span>
+                <span class="result">85</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="calculatorSection" class="blackbox calculator">
+        <!-- Operation display -->
+
+        <div id="operationDisplay" class="operation">
+            <!-- displays left side of current/tentative operation -->
+            <p id="operationBuild" class="operationElement">No Operation Yet</p>
+            <!-- Default input is 0 -->
+            <p id="input" class="operationElement">0</p>
+        </div>
+
+        <div class="non-operators">
+
+            <!-- Clear key -->
+            <!-- Takes up 2 columns-->
+            <div class="calc-button clear">
+                <p>C</p>
+            </div>
+            <!-- Backspace key -->
+            <!-- Takes up 1 column -->
+            <div class="calc-button delete">
+                <p>DEL</p>
+            </div>
+
+            <!-- Number keys -->
+            <!-- Take up 1 column each (except zero) -->
+            <div class="num-keys">
+                <div class="calc-button num-key">
+                    <p>7</p>
+                </div>
+                <div class="calc-button num-key">
+                    <p>8</p>
+                </div>
+                <div class="calc-button num-key">
+                    <p>9</p>
+                </div>
+                <div class="calc-button num-key">
+                    <p>4</p>
+                </div>
+                <div class="calc-button num-key">
+                    <p>5</p>
+                </div>
+                <div class="calc-button num-key">
+                    <p>6</p>
+                </div>
+                <div class="calc-button num-key">
+                    <p>1</p>
+                </div>
+                <div class="calc-button num-key">
+                    <p>2</p>
+                </div>
+                <div class="calc-button num-key">
+                    <p>3</p>
+                </div>
+
+                <!-- Takes up 2 columns-->
+                <div class="calc-button num-key zero">
+                    <p>0</p>
+                </div>
+
+                <div class="calc-button num-key">
+                    <p>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operator keys -->
+        <!-- Take up 1 column each -->
+        <div class="operator-keys">
+            <div class="calc-button operator-key">
+                <p>&divide;</p>
+            </div>
+            <div class="calc-button operator-key">
+                <p>&times;</p>
+            </div>
+            <div class="calc-button operator-key">
+                <p>&#45;</p>
+            </div>
+            <div class="calc-button operator-key">
+                <p>&plus;</p>
+            </div>
+            <div class="calc-button operator-key">
+                <p>&equals;</p>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
