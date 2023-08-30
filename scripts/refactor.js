@@ -2,176 +2,206 @@
 //Crude script load check
 console.log("Hello from refactor");
 
-//EVENT LISTENER INTIALIZATION
-    //a click event for each calculator button
-const buttons = document.querySelectorAll('.calc-button');
-buttons.forEach((button) => {
-
-    const buttonValue = button.querySelector('p').innerText;
-
-    button.addEventListener('click', () => {
-
-        processButton(buttonValue); //button handler
-        alignExpressions(); //realign expressions
-
-    });
-
-});
-
-//Aligns expressions by result length
-const alignExpressions = () => {
-    const results = document.querySelectorAll(".result");
-    let maxResultWidth = 0;
-
-    // Calculate the maximum result width
-    results.forEach((result) => {
-        const resultWidth = result.clientWidth;
-        if (resultWidth > maxResultWidth) {
-            maxResultWidth = resultWidth;
-        }
-    });
-
-    // Set the calculated maximum result width
-    results.forEach((result) => {
-        result.style.minWidth = maxResultWidth + "px";
-    });
-
-}
-
+/**** Expression class ****
+ * Purpose: Handles all expression logic
+ * Properties: left, operator, right
+ * Methods: get, clear, setters, hasNested, evaluate
+ * ***********************/
 class Expression {
     constructor() {
         this.expression = {
-            left: [],
+            left: null,
             operator: '',
-            right: []
-        }
+            right: null
+        };
     }
 
     get() {
-        return this.expression;
-    }
-
-    appendValue(value) {
-        this.expression += value;
-    }
-
-    appendOperator(operator) {
-        this.expression += operator;
+        const { left, operator, right } = this.expression;
+        const leftArr = left instanceof Expression ? left.get() : [left];
+        const rightArr = right instanceof Expression ? right.get() : [right];
+        return [...leftArr, operator, ...rightArr];
     }
 
     clear() {
         this.expression = [];
     }
+
+    setLeft(operand) {
+        this.expression.left = operand;
+    }
+
+    setOperator(operator) {
+        this.expression.operator = operator;
+    }
+
+    setRight(operand) {
+        this.expression.right = operand;
+    }
+
+    hasNested() {
+        return (this.expression.left instanceof Expression || 
+            this.expression.right instanceof Expression);
+    }
+
+    evaluate() {
+        if (this.hasNested()) {
+            return Calculator.evaluate(this.expression); // Using Calculator directly
+        } else {
+            // Evaluate non-nested expression
+        }
+    }
+
 }
 
-const Calculator = {
-    //displays
-    historyDisplay: document.getElementById("history"),
-    expressionDisplay: document.getElementById("currentExpression"),
-    operationBuildDisplay: document.getElementById("operationBuild"),
-    inputDisplay: document.getElementById("input"),
 
-    //constants
-    operatorMap: new Map([
-        ['*', 1],
-        ['/', 1],
-        ['+', 2],
-        ['-', 2]
-      ]),
-    operators: [],
+/**** Display class ****
+ * Purpose: Handles all display logic
+ * Properties: ID, element
+ * Methods: update, clear, alignExpressions
+ * ***********************/
+class Display {
+    constructor(htmlID) {
+        this.display = {
+            ID: htmlID,
+            element: document.getElementById(htmlID)
+        }
+    }
 
-    // tracked/mutable values
-    history: [], //contains all final expression evaluations
-    expression: new Expression(), //contains the current expression slotted to evaluate
-    operationBuild: [], //contains the expression evaulation so far and the tentative operator
-    input: [], //contains the current input
+    update() {
+        switch(this.display.ID) {
+            case 'input':
+                // ... input Update logic ... //
+                this.display.element.textContent = calculator.input.value;
+                break;
+            case 'operationBuild':
+                // ... operationBuild Update logic ... //
+                this.display.element.textContent = [calculator.operationBuild.expression].join(' ');
+                break;
+            case 'currentExpression':
+                // ... expression Update logic ... //
+                this.display.element.textContent = calculator.expression;
+                this.alignExpressions();
+                break;
+            case 'history':
+                // ... history Update logic ... //
+                this.display.element.textContent = calculator.history;
+                this.alignExpressions();
+                break;
+            default: break;
+        }
+    }
+
+    clear() {
+        this.display.element.textContent = '';
+    }
+
+    //Aligns expressions by result length
+    alignExpressions() {
+        const results = document.querySelectorAll(".result");
+        console.log(results);
+        let maxResultWidth = 0;
+
+        // Calculate the maximum result width
+        results.forEach((result) => {
+            const resultWidth = result.clientWidth;
+            if (resultWidth > maxResultWidth) {
+                maxResultWidth = resultWidth;
+            }
+        });
+
+        // Set the calculated maximum result width
+        results.forEach((result) => {
+            result.style.minWidth = maxResultWidth + "px";
+        });
+
+    }
+}
+
+
+/**** Calculator class ****
+ * Purpose: Handles all input processing and data storage
+ * Properties: history, currentExpression, operationBuild, input,
+ *          buttons, operatorPriorityMap, operators
+ * Methods: processInput, evaluate
+ * ***********************/
+class Calculator {
+
+    constructor() {
+        // Initialize calculator properties
+        this.history = {
+            data: [],
+            display: new Display("history"),
+        };
+        
+        this.currentExpression = {
+            expression: null,
+            display: new Display("currentExpression"),
+        };
+
+        this.operationBuild = {
+            expression: null,
+            operator: '',
+            display: new Display("operationBuild"),
+        };
+
+        this.input = {
+            value: '',
+            display: new Display("input"),
+        };
+
+        this.buttons = document.querySelectorAll('.calc-button'),
+
+        this.buttons.forEach((button) => {
+
+            const buttonValue = button.querySelector('p').innerText;
+        
+            button.addEventListener('click', () => {
+                this.processInput(buttonValue); //button handler
+            });
+        
+        });
+
+        this.operatorPriorityMap = new Map([
+            ['(', -1],  //TODO: figure out how to handle parentheses
+            [')', -1],  //
+            ['*', 1],
+            ['/', 1],
+            ['+', 2],
+            ['-', 2],
+            //... additional operators go here ...
+        ]);
+
+        this.operators = Array.from(this.operatorPriorityMap.keys());
+    }
+
+    processInput(input) {
+        //TODO: INPUT PROCESSING
+        this.input.value += input;
+        this.input.display.update();
+    }
+
+    evaluate(expression) {
+        if (expression instanceof Expression) {
+            return expression.evaluate(); // Evaluate the Expression instance
+        } else if (Array.isArray(expression)) {
+            const [leftExpr, operator, rightExpr] = expression;
+            const leftValue = this.evaluate(leftExpr);
+            const rightValue = this.evaluate(rightExpr);
+
+            // Perform operations based on operator precedence
+            if (this.operatorPrecedence[operator] <= this.currentPrecedence) {
+                // Evaluate the current operation
+                //TODO: Handle evaluation of expression
+            }
+            //TODO: Handle operators with higher precedence later
+
+            //TODO: Implement logic to perform the operation based on operator
+        }
+    }
+
     
-    updateStatus: { //tracks what to update when updateDisplays is called
-        history: false,
-        expression: false,
-        operationBuild: false,
-        input: false,
 
-        //shortcut methods for toggling all update statuses on or off
-        all() {
-            this.history = this.expression = this.operationBuild = this.input = true;
-        },
-        reset() {
-            this.history = this.expression = this.operationBuild = this.input = false;
-        }
-
-    },
-
-    initialize() {
-        // Gather the operators from 'operatorMap'
-        this.operators = Array.from(this.operatorMap.keys());
-
-        //... default display code here ...
-        this.input.push("0");
-        this.updateDisplays("input");
-
-        // ... any other initialization code ...
-    },
-
-    appendValue(value) {
-
-        //***TODO: Create a function to check if the value is an operator or operand */
-        //***TODO: Add decimal logic, move append logic to Expression class */
-        const isOperand = false;
-
-        if (isOperand) {
-            
-        }
-    },
-
-    updateDisplays(update = '') {
-
-        const updates = this.updateStatus;
-
-        //short-circuit?
-        if(updates.input || update === "input") {
-            //update the input display
-            this.inputDisplay.textContent = this.input;
-        }
-
-        //short-circuit?
-        if(updates.operationBuild || update === "operationBuild") {
-            //update the operationBuild display
-            this.operationBuildDisplay.textContent = this.operationBuild;
-        }
-
-        if(updates.expression || update === "expression") {
-            //update the current expression display
-            this.expressionDisplay.textContent = this.expression.get();
-
-            alignExpressions(); //realign expressions
-        }
-
-        if(updates.history || update === "history") {
-            //TODO: Loop over history[] to add and fill spans
-            //update the history
-
-            //TODO: Separate this into another method to call upon "=" evaluation
-            const newExpressionSpan = this.historyDisplay.appendChild(document.createElement('span'));
-            newExpressionSpan.setAttribute('class','expression');
-            newExpressionSpan.textContent = this.expression.get();
-            
-            alignExpressions(); //realign expressions
-        }
-
-        //reset the update status
-        this.updateStatus.reset();
-    },
-
-    // ... other methods ...
-
-        //EVALUATION
 };
 
-
-//processes the button based on it's value
-const processButton = (buttonVal) => {
-    //nothing yet
-}
-
-Calculator.initialize();
+const calculator = new Calculator();

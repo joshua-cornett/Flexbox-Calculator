@@ -12,12 +12,12 @@
     <script>0</script>
 
     <section id="historySection" class="outer">
-        <div id="history" class="blackbox history">
+        <div id="history" class="displaybox history">
             <h3 class="displayHeader">History</h3>
             <div class="expression">
-                <span class="expressionLeft">1000000 / 10</span>
+                <span class="expressionLeft">1000 / 10</span>
                 <span class="equals">=</span>
-                <span class="result">100000</span>
+                <span class="result">100</span>
             </div>
             <div class="expression">
                 <span class="expressionLeft">2 + 2</span>
@@ -30,7 +30,7 @@
     
     <section id="currentExpressionSection" class="outer">
         <!-- Displays current expression -->
-        <div class="blackbox currentExpression">
+        <div class="displaybox currentExpression">
             <h4 class="displayHeader">Current Expression</h4>
             <div id="currentExpression" class="expression">
                 <span class="expressionLeft">50 + 5 + 30</span>
@@ -42,10 +42,10 @@
         </div>
     </section>
 
-    <section id="calculatorSection" class="blackbox calculator">
+    <section id="calculatorSection" class="outer calculator">
         <!-- Operation display -->
 
-        <div id="operationDisplay" class="operation">
+        <div id="operationDisplay" class="displaybox operation">
             <!-- displays left side of current/tentative operation -->
             <p id="operationBuild" class="operationElement">No Operation Yet</p>
             <!-- Default input is 0 -->
